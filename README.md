@@ -34,6 +34,8 @@ There are different grinds. You can do different grinds by holding the buttons w
 
 9 + D = FS Boardslide
 
+Press S to stop the board.
+
 You can also __manual__ and __nose manual__.
 
 W + S = Manual
