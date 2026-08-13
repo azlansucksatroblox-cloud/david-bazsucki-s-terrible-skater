@@ -6,8 +6,9 @@ In order to setup the game, you will have to do the following one by one:
 
 1. Install ROBLOX.
 2. Make a ROBLOX account.
-3. Verify your age by doing a face scan. (The reason for this is due to a new ROBLOX update where all new games on the platform are locked to 16+. So, you will have to do a face scan to confirm that you are over 16)
-4. Once that is done, simply join the game.
+3. After making an account, go to the settings.
+4. Verify your age by doing a face scan. Click on the "Continue with camera" button. (The reason for this is due to a new ROBLOX update where all new games on the platform are locked to 16+. So, you will have to do a face scan to confirm that you are over 16)
+5. Once that is done, simply join the game.
 
 # Controls to the game:
 
