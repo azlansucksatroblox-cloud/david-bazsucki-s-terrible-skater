@@ -174,7 +174,6 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 		return
 	end
 
-	-- Tear down the previous session before starting this one.
 	CleanupBoardSession()
 	boardSessionId += 1
 	local mySession = boardSessionId
@@ -201,7 +200,6 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 
 	local riding = skateboard:WaitForChild("Riding")
 
-	-- ---- State ----
 	local inOllie = false
 	local tricksDebounce = true
 	local isMoving = false
@@ -265,8 +263,8 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 	local GRIND_REATTACH_COOLDOWN = 0.5
 
 	local flowGrindConnection = nil
-	local FLOW_GRIND_MAX_DISTANCE = 6 -- studs of travel before flow window closes
-	local FLOW_GRIND_MAX_TIME = 0.4   -- safety cap in seconds
+	local FLOW_GRIND_MAX_DISTANCE = 6
+	local FLOW_GRIND_MAX_TIME = 0.4
 
 	local function StartFlowGrindWindow()
 		if flowGrindConnection then
@@ -292,15 +290,7 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 		end)
 	end
 
-	-- Forward-declared: EndGrind (below) needs to call this, but it's
-	-- defined further down in the "Movement" section. Without this
-	-- forward declaration, Lua would resolve that call to a nil global
-	-- instead of the real function.
 	local REALMOVEFORWARD
-
-	-- ============================================================
-	-- Core state helpers
-	-- ============================================================
 
 	local comboConnection = nil
 
@@ -324,7 +314,7 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 
 
 	local defaultPosition = feedbackGui:WaitForChild("Fixed").Position
-	local function playFeedback(imageLabel)		
+	local function playFeedback(imageLabel)
 		local goal = imageLabel.Position + UDim2.new(0, 0, (imageLabel.Position.Y.Scale * -.5), 0)
 
 		imageLabel.Position = defaultPosition
@@ -422,13 +412,13 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 	end
 
 	local function startComboTimer()
-		if comboConnection then return end  -- don't stack a second loop
+		if comboConnection then return end
 		comboConnection = RS.Heartbeat:Connect(function(dt)
 			if comboActive then
 				comboTimer -= dt
-				if comboTimer <= 0 then				
+				if comboTimer <= 0 then
 					comboActive = false
-					comboConnection:Disconnect()	
+					comboConnection:Disconnect()
 
 					combo = 0
 					comboMultiplier = 0
@@ -476,7 +466,7 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 		end)
 	end
 
-	local function trackCombo(trickName, isItATrick, HardTrick)		
+	local function trackCombo(trickName, isItATrick, HardTrick)
 		if not comboActive then decoyCombo = 0 comboMultiplier = 0 end
 
 		local HttpService = game:GetService("HttpService")
@@ -486,7 +476,7 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 		local cleaned = HttpService:JSONEncode(comboHistory):gsub('["%[%]{}]', " ")
 
 		comboActive = true
-		comboTimer = maxTimer 
+		comboTimer = maxTimer
 		tricksLabel.Text = cleaned
 
 		if isItATrick == 3 then
@@ -515,7 +505,7 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 			while canManualLoop do
 				combo += 1
 				comboLabel.Text = combo.. " x ".. comboMultiplier
-				comboTimer = maxTimer 
+				comboTimer = maxTimer
 				task.wait(.1)
 			end
 		elseif isItATrick == 1 then
@@ -524,7 +514,7 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 			while canGrindLoop do
 				combo += 3
 				comboLabel.Text = combo.. " x ".. comboMultiplier
-				comboTimer = maxTimer 
+				comboTimer = maxTimer
 
 				task.wait(.1)
 			end
@@ -579,7 +569,7 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 				idleTrack:Play()
 			end
 		end)
-		
+
 		task.wait(.05)
 		REALMOVEFORWARD()
 	end
@@ -587,13 +577,12 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 	local function StartGrind(rail, isFlow, trackAnim, trickName, rotation)
 		if isGrinding then return end
 
-		if not isFlow then
+		if not flowGrind then
 			stopState()
 			task.wait(.015)
 			grindScreen()
 
 			trackAnim:Play()
-			trackAnim.Looped = true
 			ollieTrack:Stop()
 			pushTrack:Stop()
 		end
@@ -624,7 +613,7 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 				end
 			end
 		end
-		
+
 		deck.Transparency = 1
 
 		isGrinding = true
@@ -658,7 +647,6 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 
 			local point, t = ClosestPointOnRail(grindRail, chassis.Position)
 
-			-- Make sure the board hasn't drifted too far sideways.
 			local lateralOffset = chassis.Position - point
 
 			if lateralOffset.Magnitude > GRIND_FALL_OFF_DISTANCE  and not isFlow then
@@ -736,7 +724,6 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 			sideways = chassis.CFrame.RightVector
 		end
 
-		-- sign to the correctly-leveled `sideways` vector above.
 		local sign = (sideways:Dot(direction) >= 0) and 1 or -1
 		local sideDir = sideways * sign * GRIND_EXIT_SIDE
 
@@ -843,7 +830,6 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 				elseif not regular then
 					marker.Position = marker.Position:Lerp(UDim2.new(percent, 0, .2, 0), .1)
 				end
-				--marker.Position = UDim2.new(percent, 0, -.1, 0)
 
 				if percent <= 0 then
 					canManual = false
@@ -909,7 +895,6 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 
 				marker.AnchorPoint = Vector2.new(0.5, 0.5)
 				marker.Position = marker.Position:Lerp(UDim2.new(percent, 0, .2, 0), .1)
-				--marker.Position = UDim2.new(percent, 0, .2, 0)
 
 				task.wait(.01)
 
@@ -935,17 +920,7 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 	end
 
 	local function speedCheck()
-		--[[if isGrinding then return end
-		if vertCheck() then return end 
-
-		if chassis.AssemblyLinearVelocity.Magnitude < 7.5 and not canPush then
-			task.spawn(function() ragdollProcess() end)
-		end]]
 	end
-
-	-- ============================================================
-	-- Movement
-	-- ============================================================
 
 	function REALMOVEFORWARD()
 		ollieHeight = 55
@@ -955,9 +930,9 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 		ollieDebounce = true
 
 		idleTrack:Play()
-		
+
 		deck.Transparency = 0
-		
+
 		if skateboard:FindFirstChild("Fake Deck") then
 			skateboard:FindFirstChild("Fake Deck"):Destroy()
 		end
@@ -1138,13 +1113,6 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 		end
 	end
 
-	-- ============================================================
-	-- Rail grinding — fully automatic: whatever part is directly beneath
-	-- the chassis, if it's named "Rail", you grind it. No key needed.
-	-- Ends on its own when you reach the end of the rail, drift too far
-	-- off it, or dismount.
-	-- ============================================================
-
 	local function CheckForRail()
 		if not stillActive() then return end
 		if not riding.Value then return end
@@ -1191,13 +1159,13 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 	end
 
 	local function differentGrinds0(input, gameProcessed)
-		if gameProcessed then return end 
+		if gameProcessed then return end
 
 		if input.KeyCode == Enum.KeyCode.A and riding.Value and not isGrinding and not flowGrind and not canGrind then
 			canBSSlide = true
 			canFSSlide = false
 		end
-		
+
 		if input.KeyCode == Enum.KeyCode.D and riding.Value and not isGrinding and not flowGrind and not canGrind then
 			canFSSlide = true
 			canBSSlide = false
@@ -1205,20 +1173,16 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 	end
 
 	local function differentGrinds1(input, gameProcessed)
-		if gameProcessed then return end 
+		if gameProcessed then return end
 
 		if input.KeyCode == Enum.KeyCode.A and riding.Value and not isGrinding and not flowGrind and not canGrind then
 			canBSSlide = false
 		end
-		
+
 		if input.KeyCode == Enum.KeyCode.D and riding.Value and not isGrinding and not flowGrind and not canGrind then
 			canFSSlide = false
 		end
 	end
-
-	-- ============================================================
-	-- Ollie
-	-- ============================================================
 
 	local function OllieKneel(input, gameProcessed)
 		if gameProcessed then return end
@@ -1307,10 +1271,6 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 		end
 
 	end
-
-	-- ============================================================
-	-- Tricks — shared helper instead of 4 copy-pasted functions
-	-- ============================================================
 
 	local function PerformTrick(tracks, rotationFn, totalRadians, trickName, trickSpeed)
 		tricksDebounce = false
@@ -1450,10 +1410,10 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 
 	local function VarialKickFlip()
 		PerformTrickADVANCED(
-			{ kickflipTrack }, 
+			{ kickflipTrack },
 
-			function(r) return CFrame.Angles(0, -r, 0) end, 
-			function(r) return CFrame.Angles(0, 0, -r) end, 
+			function(r) return CFrame.Angles(0, -r, 0) end,
+			function(r) return CFrame.Angles(0, 0, -r) end,
 
 			math.rad(180),
 			math.rad(360),
@@ -1465,10 +1425,10 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 
 	local function VarialHeelFlip()
 		PerformTrickADVANCED(
-			{ popShuvTrack, heelflipTrack }, 
+			{ popShuvTrack, heelflipTrack },
 
-			function(r) return CFrame.Angles(0, -r, 0) end, 
-			function(r) return CFrame.Angles(0, 0, r) end, 
+			function(r) return CFrame.Angles(0, -r, 0) end,
+			function(r) return CFrame.Angles(0, 0, r) end,
 
 			math.rad(180),
 			math.rad(360),
@@ -1480,10 +1440,10 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 
 	local function TreFlip()
 		PerformTrickADVANCED(
-			{ frontShuvTrack, kickflipTrack }, 
+			{ frontShuvTrack, kickflipTrack },
 
-			function(r) return CFrame.Angles(0, -r, 0) end, 
-			function(r) return CFrame.Angles(0, 0, -r) end, 
+			function(r) return CFrame.Angles(0, -r, 0) end,
+			function(r) return CFrame.Angles(0, 0, -r) end,
 
 			math.rad(360),
 			math.rad(360),
@@ -1495,10 +1455,10 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 
 	local function LaserFlip()
 		PerformTrickADVANCED(
-			{ popShuvTrack, heelflipTrack }, 
+			{ popShuvTrack, heelflipTrack },
 
-			function(r) return CFrame.Angles(0, r, 0) end, 
-			function(r) return CFrame.Angles(0, 0, r) end, 
+			function(r) return CFrame.Angles(0, r, 0) end,
+			function(r) return CFrame.Angles(0, 0, r) end,
 
 			math.rad(360),
 			math.rad(360),
@@ -1536,19 +1496,8 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 			trick()
 		elseif tricksDebounce and advancedTrick then
 			hardtrick()
-		--[[else
-			task.spawn(trick)
-			task.delay(.2, function()
-				if stillActive() then
-					ragdollProcess()
-				end
-			end)]]
 		end
 	end
-
-	-- ============================================================
-	-- Steering
-	-- ============================================================
 
 	TrackConnection(userInputService.InputBegan:Connect(function(input)
 		if input.KeyCode == Enum.KeyCode.A and riding.Value then
@@ -1571,11 +1520,6 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 		end
 	end))
 
-	-- ============================================================
-	-- Background loops
-	-- ============================================================
-
-	--TrackConnection(RS.Heartbeat:Connect(airCheck))
 	TrackConnection(RS.Heartbeat:Connect(CheckForRail))
 
 	task.spawn(function()
@@ -1587,10 +1531,6 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 			task.wait(.5)
 		end
 	end)
-
-	-- ============================================================
-	-- Out of place input function:
-	-- ============================================================
 
 	userInputService.InputBegan:Connect(function(input, gameProcessed)
 		if input.KeyCode == Enum.KeyCode.Nine and riding.Value then
@@ -1612,10 +1552,6 @@ spawnEvent.OnClientEvent:Connect(function(skateboard)
 			advancedTrick = false
 		end
 	end)
-
-	-- ============================================================
-	-- Wire up input
-	-- ============================================================
 
 	TrackConnection(humanoid.StateChanged:Connect(onBoard))
 	TrackConnection(userInputService.InputBegan:Connect(ManualDirectionInput))
