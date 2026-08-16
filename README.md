@@ -6,8 +6,8 @@ In order to setup the game, you will have to do the following one by one:
 
 1. Download ROBLOX Studio if you haven't already.
 2. Login to ROBLOX Studio.
-3. Download the "game.rbxl" file.
-4. Open the file.
+3. Download the game by clicking on "game.zip".
+4. Open the "game.rbxl" file.
 5. Once you are in, press F5 to start the game.
 
 # Controls to the game:
