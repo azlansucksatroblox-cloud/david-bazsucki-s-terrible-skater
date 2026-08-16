@@ -4,11 +4,10 @@ The game is basically a recreation of the original Tony Hawk games in ROBLOX. It
 # How to setup the game:
 In order to setup the game, you will have to do the following one by one:
 
-1. Install ROBLOX.
-2. Make a ROBLOX account.
-3. After making an account, go to the settings.
-4. Verify your age by doing a face scan. Click on the "Continue with camera" button. (The reason for this is due to a new ROBLOX update where all new games on the platform are locked to 16+. So, you will have to do a face scan to confirm that you are over 16)
-5. Once that is done, simply join the game.
+1. Download ROBLOX Studio if you haven't already.
+2. Login to ROBLOX Studio.
+3. Click on the .rblx file.
+4. Play the game.
 
 # Controls to the game:
 
@@ -26,6 +25,8 @@ D = Heelflip
 
 You can hold down the 8 key to do __advanced tricks__:
 
+8 + W = Hardflip
+
 8 + Q = Treflip
 
 8 + E = Laserflip
@@ -33,6 +34,8 @@ You can hold down the 8 key to do __advanced tricks__:
 8 + A = Varial Kickflip
 
 8 + D = Varial Heelflip
+
+8 = S = Inward Heelflip
 
 You can __grind__ on rails and other objects. To grind, you must first get your skateboard ON TOP of a rail. You can do that by ollie-ing over it, and once the rail is facing under you, press 9.
 There are different grinds. You can do different grinds by holding the buttons while pressing 9. Controls to different grinds:
