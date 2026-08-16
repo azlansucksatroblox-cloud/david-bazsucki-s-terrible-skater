@@ -52,4 +52,5 @@ Press S to stop the board.
 You can also __manual__ and __nose manual__.
 
 W + S = Manual
+
 S + W = Nose Manual
