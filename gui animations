@@ -1,0 +1,149 @@
+local debounce = false
+
+local openedEvent = game.ReplicatedStorage:WaitForChild("Opened")
+local userInputService = game:GetService("UserInputService")
+
+local playerGui = game.Players.LocalPlayer.PlayerGui
+local mainMenu = playerGui:WaitForChild("MainMenu")
+local design = mainMenu.Design
+local sign = mainMenu.MainMenuLabel
+local background = mainMenu.Background
+local noob = mainMenu.Noob
+local resumeButton = mainMenu.Resume
+local exitGameButton = mainMenu.ExitGame
+local fill = mainMenu.Fill
+
+local menuOpenSFX = game.SoundService:WaitForChild("DE_MenuFlyUp")
+local menuSelectSFX = game.SoundService:WaitForChild("DE_MenuSelect")
+
+local buttons = {}
+for i,v in ipairs(mainMenu:GetChildren()) do
+	if v:IsA("ImageButton") then
+		table.insert(buttons, v)
+	end
+end
+
+table.sort(buttons, function(a, b)
+	return a.Name < b.Name
+end)
+
+local backgroundPos = background.Position
+local noobPos = noob.Position
+local designPos = design.Position
+
+
+local signPos = sign.Position
+fill.Transparency = 1
+sign.Position = signPos + UDim2.new(.098, 0, 0, 0)
+design.Position = designPos + UDim2.new(.082, 0, 0, 0)
+background.Position = backgroundPos + UDim2.new(.36, 0, 0, 0)
+noob.Position = noobPos + UDim2.new(.143, 0, 0, 0)
+mainMenu.Enabled = false
+
+local TS = game:GetService("TweenService")
+
+local tweenInfo = TweenInfo.new(
+	.2,
+	Enum.EasingStyle.Circular,
+	Enum.EasingDirection.Out)
+
+local tweenInfo2 = TweenInfo.new(
+	.3,
+	Enum.EasingStyle.Circular,
+	Enum.EasingDirection.Out)
+
+local tweenInfo3 = TweenInfo.new(
+	.5,
+	Enum.EasingStyle.Cubic,
+	Enum.EasingDirection.Out)
+
+local backgroundAnimation = TS:Create(background, tweenInfo, { Position = backgroundPos})
+local noobAnimation = TS:Create(noob, tweenInfo3, { Position = noobPos})
+local designAnimation = TS:Create(design, tweenInfo2, { Position = designPos})
+local signAnimation = TS:Create(sign, tweenInfo2, { Position = signPos})
+
+local evilBackgroundAnimation = TS:Create(background, tweenInfo, { Position = backgroundPos + UDim2.new(.36, 0, 0, 0)})
+local evilNoobAnimation = TS:Create(noob, tweenInfo3, { Position = noobPos + UDim2.new(.143, 0, 0, 0)})
+local evilDesignAnimation = TS:Create(design, tweenInfo2, { Position = designPos + UDim2.new(.082, 0, 0, 0)})
+local evilSignAnimation = TS:Create(sign, tweenInfo2, { Position = signPos + UDim2.new(.098, 0, 0, 0)})
+
+local positionList = {}
+local function buttonFunctions()
+	for i = 1, #buttons do 
+		local buttonPos = buttons[i].Position
+		table.insert(positionList, buttonPos)
+		buttons[i].Position = buttonPos + UDim2.new(0.404,0,0,0)
+	end
+end
+
+local function buttonAnimations()
+	for i = 1, #buttons do
+		local buttonAnimations = TS:Create(buttons[i], tweenInfo2, { Position = positionList[i]})
+		buttonAnimations:Play()
+		task.wait()
+	end
+end
+
+buttonFunctions()
+
+local function fadeIn()
+	menuOpenSFX:Play()
+	mainMenu.Enabled = true
+	task.spawn(function()
+		for i = 1, 4 do
+			fill.Transparency -= .1
+			task.wait(.01)
+		end
+	end)
+	backgroundAnimation:Play()
+	buttonAnimations()
+	noobAnimation:Play()
+	signAnimation:Play()
+	designAnimation:Play()
+end
+
+local function fadeOut()
+	menuSelectSFX:Play()
+	task.delay(.05, function() mainMenu.Enabled = false end)
+	task.spawn(function()
+		for i = 1, 4 do
+			fill.Transparency += .1
+			task.wait(.02)
+		end
+	end)
+	evilNoobAnimation:Play()
+	evilSignAnimation:Play()
+	evilDesignAnimation:Play()
+	evilBackgroundAnimation:Play()
+	task.spawn(function()
+		for i = 1, #buttons do
+			local buttonAnimations = TS:Create(buttons[i], tweenInfo2, { Position = positionList[i] + UDim2.new(0.404,0,0,0) })
+			buttonAnimations:Play()
+			task.wait()
+		end
+	end)
+end
+
+fadeIn()
+
+userInputService.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
+	if input.KeyCode == Enum.KeyCode.M and debounce then
+		debounce = false
+		fadeIn()
+	--[[elseif input.KeyCode == Enum.KeyCode.Q and not debounce then
+		debounce = true
+		fadeOut()]]
+	end
+end)
+
+resumeButton.MouseButton1Click:Connect(function()
+	if not debounce then
+		debounce = true
+		fadeOut()
+	end
+end)
+
+exitGameButton.MouseButton1Click:Connect(function()
+	game.Players.LocalPlayer:Kick("You left the game.")
+end)
